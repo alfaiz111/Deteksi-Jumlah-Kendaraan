@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deteksi Kendaraan</title>
+
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          background: #f2f6f9;
+          margin: 0;
+          padding: 0;
+      }
+
+      .container {
+          width: 100%;
+          max-width: 600px;
+          margin: 40px auto;
+          background: white;
+          padding: 30px;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      }
+
+      h2 {
+          text-align: center;
+          color: #4A6572;
+          margin-bottom: 25px;
+      }
+
+      form {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+      }
+
+      input[type="file"] {
+          padding: 12px;
+          border: 1px solid #d0d8e2;
+          border-radius: 8px;
+          background: #fafbfc;
+          cursor: pointer;
+      }
+
+      button {
+          padding: 12px;
+          background: #7FB3D5;
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.2s;
+      }
+
+      button:hover {
+          background: #5DA3C7;
+      }
+
+      .result-box {
+          margin-top: 30px;
+          padding: 20px;
+          background: #e9f5ff;
+          border-radius: 10px;
+          border: 1px solid #cfe7fb;
+          text-align: center;
+      }
+
+      img {
+          margin-top: 15px;
+          border-radius: 10px;
+          box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+      }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Deteksi Jumlah Kendaraan</h2>
+
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required>
+        <button type="submit">Deteksi</button>
+    </form>
+
+    {% if count is not none %}
+    <div class="result-box">
+        <h3>Jumlah Kendaraan Terdeteksi: <strong>{{ count }}</strong></h3>
+        <img src="{{ url_for('static', filename='output.jpg') }}" width="100%">
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
