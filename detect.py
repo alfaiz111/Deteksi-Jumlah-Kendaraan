@@ -1,15 +1,15 @@
 from ultralytics import YOLO
 import cv2
 
-# Load model YOLOv8 (versi kecil agar cepat)
-model = YOLO("yolov8n.pt")
+# Load model YOLOv8 (Large untuk akurasi maksimal)
+model = YOLO("yolov8l.pt")  # l = large
 
-# Daftar kelas kendaraan yang ingin dihitung
-vehicle_classes = ["car", "motorcycle", "bus", "truck", "bicycle"]
+# Daftar kelas kendaraan
+vehicle_classes = ["car", "truck", "bus", "motorcycle", "bicycle", "scooter", "van", "train"]
 
 def detect_vehicle(image_path):
-    # Jalankan inferensi YOLO
-    results = model(image_path)[0]
+    # Jalankan inferensi dengan confidence threshold 0.3 dan resize gambar lebih besar untuk objek kecil
+    results = model(image_path, conf=0.3, imgsz=1280)[0]  # imgsz lebih besar untuk deteksi lebih akurat
 
     # Baca gambar dengan OpenCV
     img = cv2.imread(image_path)
@@ -27,20 +27,34 @@ def detect_vehicle(image_path):
             count += 1
 
             # Ambil koordinat bounding box
-            x1, y1, x2, y2 = box.xyxy[0].tolist()
+            x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
 
             # Gambar kotak di sekitar objek
-            cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(img, label,
-                        (int(x1), int(y1) - 10),
+                        (x1, y1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5,
+                        0.6,
                         (0, 255, 0),
                         2)
+
+    # Tambahkan jumlah kendaraan di atas gambar
+    cv2.putText(img, f"Total Vehicles: {count}", 
+                (10, 40), 
+                cv2.FONT_HERSHEY_SIMPLEX, 
+                1, 
+                (0, 0, 255), 
+                2)
 
     # Simpan gambar hasil deteksi
     output_path = "static/output.jpg"
     cv2.imwrite(output_path, img)
 
-    # Return jumlah kendaraan + path gambar output
     return count, output_path
+
+# Contoh pemanggilan fungsi
+if __name__ == "__main__":
+    image_path = "test_image.jpg"  # ganti dengan path gambar kamu
+    total, output_img = detect_vehicle(image_path)
+    print(f"Jumlah kendaraan terdeteksi: {total}")
+    print(f"Gambar hasil deteksi tersimpan di: {output_img}")
